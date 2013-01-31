@@ -11,10 +11,20 @@ serialport.list(function (e, ports) {
 			arduino.on("open", function () {
 				console.log('* connection successful! *');
 				arduino.on('data', onDataReceived);
+				setInterval(toggleLed, 2000);
 			});
 		}
 	});
 });
+
+var state = 0;
+
+var toggleLed = function()
+{
+	state = state == 0 ? 1 : 0;
+	console.log('serial state :: '+state);
+	arduino.write(new Buffer([state]));
+}
 
 var onDataReceived = function(data)
 {

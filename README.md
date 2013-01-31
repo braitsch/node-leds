@@ -1,5 +1,5 @@
-##Node-LED
+##Node-Serial
 
-####A WIP to test communication between an Arduino and a Node.js Server.
+####A WIP to test communication between a Node.js Server & an Arduino.
 
 ***
