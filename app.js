@@ -6,10 +6,9 @@
 
 var express = require('express')
   , http = require('http')
-  , SerialPort = require("serialport").SerialPort
+  , port = require('./modules/serialnode');
 
 var app = express();
-// var port = new SerialPort("/dev/tty-usbserial1", { baudrate: 9600 });
 
 app.configure(function(){
 	app.set('port', 8080);
