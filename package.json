@@ -14,6 +14,7 @@
 		"express": "3.1.0",
 		"jade": "0.28.1",
 		"stylus": "0.32.0",
+		"socket.io": "0.9.12",
 		"serialport": "1.0.7"
 	},
 	"engines": {

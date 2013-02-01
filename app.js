@@ -1,12 +1,13 @@
 
 /**
- * Node-LED
+ * Node-Serial
  * Author : Stephen Braitsch
  */
 
 var express = require('express')
   , http = require('http')
-  , port = require('./modules/serialnode');
+  , port = require('./modules/serial_node')
+  , socket = require('./modules/socket_server');
 
 var app = express();
 
@@ -36,6 +37,9 @@ app.get('/', function(req, res){
 	res.render('index');
 });
 
-http.createServer(app).listen(app.get('port'), function(){
-	console.log("Express server listening on port " + app.get('port'));
-});
+// initialize socket-io //
+var io = require('socket.io').listen(http.createServer(app).listen(app.get('port'), function(){
+	socket.init(io);
+	io.set('log level', 1);
+	console.log("Express server listening on port " + app.get('port')); 
+}));
