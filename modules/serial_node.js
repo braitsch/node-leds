@@ -10,12 +10,12 @@ serialport.list(function (e, ports) {
 		if (port.manufacturer == 'FTDI'){
 			arduinoPort = '/dev/tty.usbserial-' + port.serialNumber;
 	// raspberry pi //
-		}	else if (port.pnpId.search('FTDI') != -1){
-			arduinoPort = port.comName;
+		}	else if (port.hasOwnProperty('pnpId')){
+			if (port.pnpId.search('FTDI') != -1) arduinoPort = port.comName;
 		}
 	});
 	if (arduinoPort){
-		console.log('attempting to connect to :', arduinoPort);
+		console.log('* attempting to connect to arduino at :', arduinoPort, ' *');
 		arduino = new serialport.SerialPort(arduinoPort, { baudrate: 9600, parser: serialport.parsers.readline("\n") });
 		arduino.on("open", function () {
 			console.log('* connection successful! *');

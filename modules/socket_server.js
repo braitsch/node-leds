@@ -3,6 +3,7 @@ var arduino = require('./serial_node');
 
 exports.init = function(io){
 	
+	io.set('log level', 1);
 	io.sockets.on('connection', function (socket) {
 	// tell client they have successfully connected to the server and wait for their response //
 		socket.emit('connected-to-server');

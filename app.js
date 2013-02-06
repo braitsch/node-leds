@@ -37,9 +37,8 @@ app.get('/', function(req, res){
 	res.render('index');
 });
 
-// initialize socket-io //
-var io = require('socket.io').listen(http.createServer(app).listen(app.get('port'), function(){
-	socket.init(io);
-	io.set('log level', 1);
-	console.log("Express server listening on port " + app.get('port')); 
-}));
+/* start the node server & initialize socket-io */
+var server = http.createServer(app).listen(app.get('port'), function(){
+	socket.init(require('socket.io').listen(server));
+	console.log("Express server listening at", server.address());
+});
