@@ -3,29 +3,27 @@ var serialport = require("serialport");
 var arduino;
 
 serialport.list(function (e, ports) {
-	ports.forEach(function(port) {
+	var arduinoPort;
 	// find the port the arduino is connected to //
-		console.log('port = ', port);
+	ports.forEach(function(port) {
 	// macbookpro //
 		if (port.manufacturer == 'FTDI'){
-			console.log('* attempting to connect to arduino *');
-			arduino = new serialport.SerialPort('/dev/tty.usbserial-' + port.serialNumber, { baudrate: 9600, parser: serialport.parsers.readline("\n") });
-			arduino.on("open", function () {
-				console.log('* connection successful! *');
-				arduino.on('data', onDataReceived);
-			});
-			return;
+			arduinoPort = '/dev/tty.usbserial-' + port.serialNumber;
 	// raspberry pi //
 		}	else if (port.pnpId.search('FTDI') != -1){
-			console.log('attempting to connect to : ', port.comName +'/'+port.pnpId);
-			arduino = new serialport.SerialPort(port.comName +'/'+port.pnpId, { baudrate: 9600, parser: serialport.parsers.readline("\n") });
-			arduino.on("open", function () {
-				console.log('* connection successful! *');
-				arduino.on('data', onDataReceived);
-			});
-			return;
+			arduinoPort = port.comName;
 		}
 	});
+	if (arduinoPort){
+		console.log('attempting to connect to :', arduinoPort);
+		arduino = new serialport.SerialPort(arduinoPort, { baudrate: 9600, parser: serialport.parsers.readline("\n") });
+		arduino.on("open", function () {
+			console.log('* connection successful! *');
+			arduino.on('data', onDataReceived);
+		});
+	}	else{
+		console.log('* failed to find arduino : please check your connections *');
+	}
 });
 
 var onDataReceived = function(data)
