@@ -5,6 +5,7 @@ var arduino;
 serialport.list(function (e, ports) {
 	ports.forEach(function(port) {
 	// find the port the arduino is connected to //
+		console.log('port = ', port);
 		if (port.manufacturer == 'FTDI'){
 			console.log('* attempting to connect to arduino *');
 			arduino = new serialport.SerialPort('/dev/tty.usbserial-' + port.serialNumber, { baudrate: 9600, parser: serialport.parsers.readline("\n") });
