@@ -18,7 +18,7 @@ serialport.list(function (e, ports) {
 		console.log('* attempting to connect to arduino at :', arduinoPort, ' *');
 		arduino = new serialport.SerialPort(arduinoPort, { baudrate: 9600, parser: serialport.parsers.readline("\n") });
 		arduino.on("open", function () {
-			console.log('* connection successful! *');
+			console.log('* connection to arduino successful ! *');
 			arduino.on('data', onDataReceived);
 		});
 	}	else{
