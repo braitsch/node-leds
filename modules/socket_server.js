@@ -18,10 +18,11 @@ exports.init = function(io){
 var onUserConnected = function(socket)
 {
 	console.log('user connected :: '+socket.user.name);
+// calling write if an arduino is not connected will crash the server! //
 	socket.on('button-pressed', function(data){
-		arduino.toggleLed(1);
+		if (arduino) arduino.toggleLed(1);
 	});
 	socket.on('button-released', function(data){
-		arduino.toggleLed(0);
+		if (arduino) arduino.toggleLed(0);
 	});
 }
