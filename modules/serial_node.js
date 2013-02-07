@@ -33,13 +33,16 @@ var onDataReceived = function(data)
 
 exports.toggleLed = function(n)
 {
-	console.log('sending to arduino ::', n);
-	arduino.write(new Buffer([n]), function(e, results) {
-		if (e) {
-			console.log('error :: ' + err);
-		}	else{
-			console.log('message successfully sent');
-		}
-		if (results) console.log('results :: ' + results);
-	});
+// calling write if an arduino is not connected will crash the server! //
+	if (arduino){
+		console.log('sending to arduino ::', n);
+		arduino.write(new Buffer([n]), function(e, results) {
+			if (e) {
+				console.log('error :: ' + err);
+			}	else{
+				console.log('message successfully sent');
+			}
+			if (results) console.log('results :: ' + results);
+		});
+	}
 }
