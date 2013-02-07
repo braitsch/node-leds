@@ -20,7 +20,7 @@ case "$1" in
     /usr/local/bin/node /var/node/app.js >> /var/log/node-server.log 2>&1
     ;;
   stop)
-    echo "Stopping noip"
+    echo "* stopping node-server * "
     echo "[`date -u +%Y-%m-%dT%T.%3NZ`] (sys) Stopping" >> /var/log/node-server.log
     # kill application you want to stop
     killall /usr/local/bin/node
