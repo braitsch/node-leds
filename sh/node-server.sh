@@ -17,7 +17,8 @@ case "$1" in
   start)
     echo "* starting node-server * "
     echo "[`date -u +%Y-%m-%dT%T.%3NZ`] (sys) Starting" >> /var/log/node-server.log
-    /usr/local/bin/node /var/node/app.js >> /var/log/node-server.log 2>&1
+	# the trailing ampersand forces the program to run in the background #
+    /usr/local/bin/node /var/node/app.js >> /var/log/node-server.log 2>&1&
     ;;
   stop)
     echo "* stopping node-server * "
