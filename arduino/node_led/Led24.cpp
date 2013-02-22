@@ -48,9 +48,7 @@ void Led24::update(){
 		out_from_center();
 	}  else{
 		_sequence_count = 0;
-	};
-	int data =  pollSensor();
-	int result = fancyAlgorithm(data);
+	}
 }
 
 void Led24::slow_step_left_to_right(){
