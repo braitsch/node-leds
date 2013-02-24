@@ -6,53 +6,71 @@
 
 #include "SevenSegment.h"
 
+byte const SevenSegment::SEGMENTS[10][7] = { 
+	{ 1,1,1,1,1,1,0 },  // = 0
+	{ 0,1,1,0,0,0,0 },  // = 1
+	{ 1,1,0,1,1,0,1 },  // = 2
+	{ 1,1,1,1,0,0,1 },  // = 3
+	{ 0,1,1,0,0,1,1 },  // = 4
+	{ 1,0,1,1,0,1,1 },  // = 5
+	{ 1,0,1,1,1,1,1 },  // = 6
+	{ 1,1,1,0,0,0,0 },  // = 7
+	{ 1,1,1,1,1,1,1 },  // = 8
+	{ 1,1,1,0,0,1,1 }   // = 9
+};
+
+/*
+	Constructor takes four pins that map to each of the four digits.
+	Shift Register pins (0, 1, 2) are hard coded as constants for now...
+*/
+
 SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
-	static const byte numbers[10] = {
-		B11000000, // 0
-		B11111001, // 1
-		B10100100, // 2
-		B10110000, // 3
-		B10011001, // 4
-		B10010010, // 5
-		B10000010, // 6
-		B11111000, // 7
-		B10000000, // 8
-		B10010000  // 9
-	};
-	digit1 = d1;
-	digit2 = d2;
-	digit3 = d3;
-	digit4 = d4;
-	pinMode(digit1,OUTPUT);
-	pinMode(digit2,OUTPUT);
-	pinMode(digit3,OUTPUT);
-	pinMode(digit4,OUTPUT);
-	pinMode(segA,OUTPUT);
-	pinMode(segB,OUTPUT);
-	pinMode(segC,OUTPUT);
-	pinMode(segD,OUTPUT);
-	pinMode(segE,OUTPUT);
-	pinMode(segF,OUTPUT);
-	pinMode(segG,OUTPUT);
-	pinMode(segP,OUTPUT);
+	_digitPins[0] = d1;
+	_digitPins[1] = d2;
+	_digitPins[2] = d3;
+	_digitPins[3] = d4;
+	pinMode(SERIAL_DATA, OUTPUT);
+	pinMode(REGISTER_CLOCK, OUTPUT);
+	pinMode(SERIAL_CLOCK, OUTPUT);
+	for(int i = 0; i < 4; i++) pinMode(_digitPins[i], OUTPUT);
 }
 
 void SevenSegment::update()
 {
-	for (int digitPosition=0; digitPosition < 4; digitPosition++){
-		digitalWrite(digit1 + digitPosition,HIGH);
-		for (int numIndex=0; numIndex <= 9; numIndex++){
-			int number = numbers[numIndex];
-			// digitalWrite(segA, bitRead(number, 0));
-			// digitalWrite(segB, bitRead(number, 1));
-			// digitalWrite(segC, bitRead(number, 2));
-			// digitalWrite(segD, bitRead(number, 3));
-			// digitalWrite(segE, bitRead(number, 4));
-			// digitalWrite(segF, bitRead(number, 5));
-			// digitalWrite(segG, bitRead(number, 6));
-			// digitalWrite(segP, bitRead(number, 7));
-			// delay(200);
-		}
-		digitalWrite(digit1 + digitPosition,LOW);
+	for(int i = 0; i < 4; i++) {
+		writeNumber(_displayNumber[i]);
+		digitalWrite(_digitPins[i], HIGH);
+		delay(1);
+		digitalWrite(_digitPins[i], LOW);
 	}
+}
+
+void SevenSegment::setNumber(int n)
+{
+// break the incoming number into four _digitPins //
+	_displayNumber[0] = n / 1000;
+	_displayNumber[1] = (n / 100) % 10;
+	_displayNumber[2] = (n / 10) % 10;
+	_displayNumber[3] = n % 10;
+	Serial.println(String(_displayNumber[0])+':'+String(_displayNumber[1])+':'+String(_displayNumber[2])+':'+String(_displayNumber[3]));
+}
+
+void SevenSegment::writeNumber(int n)
+{
+	const byte* digit = SevenSegment::SEGMENTS[n];
+// copy segment values for this digit into the registers array //
+	for(int i = 0; i < NUM_SEGMENTS; i++) _registers[i] = digit[i] == 0 ? 1 : 0;
+// force off the decimal point for now //
+	_registers[7] = HIGH;
+	write_registers();
+}
+
+void SevenSegment::write_registers(){
+	digitalWrite(REGISTER_CLOCK, LOW);
+	for(int i = NUM_SEGMENTS - 1; i >= 0; i--){
+		digitalWrite(SERIAL_CLOCK, LOW);
+		digitalWrite(SERIAL_DATA, _registers[i]);
+		digitalWrite(SERIAL_CLOCK, HIGH);
+	}
+	digitalWrite(REGISTER_CLOCK, HIGH);
 }

@@ -8,21 +8,23 @@ class SevenSegment{
 public:
 	SevenSegment(int d1, int d2, int d3, int d4);
 	void update();
+	void setNumber(int n);
 
 private:
-	int digit1;
-	int digit2;
-	int digit3;
-	int digit4;
-	static const int segA = 0;
-	static const int segB = 1;
-	static const int segC = 2;
-	static const int segD = 3;
-	static const int segE = 4;
-	static const int segF = 5;
-	static const int segG = 6;
-	static const int segP = 7;
-	static const byte numbers[10];
+	
+	static const int SERIAL_DATA = 0;
+	static const int REGISTER_CLOCK = 1;
+	static const int SERIAL_CLOCK = 2;
+	static const int NUM_DIGITS = 4;
+	static const int NUM_SEGMENTS = 8;
+	static byte const SEGMENTS[10][7];
+	
+	int _displayNumber[4];
+	int _digitPins[NUM_DIGITS];
+	boolean _registers[NUM_SEGMENTS];
+	
+	void writeNumber(int n);
+	void write_registers();
 };
 
 #endif
