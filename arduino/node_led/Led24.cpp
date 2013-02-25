@@ -6,7 +6,24 @@
 
 #include "Led24.h"
 
+/*
+	Animtion Modes { name, pulseDelay, repeatCount }
+*/
+
+const Led24::Mode Led24::ANIMATIONS[5] = { 
+	{ MODE_STEP_LEFT_TO_RIGHT, 250, TOTAL_LEDS},
+	{ MODE_PULSE_ALL, 250, 10},
+	{ MODE_KNIGHT_RIDER, 10, TOTAL_LEDS * 11},
+	{ MODE_TOGGLE_EVEN_ODD, 250, 10},
+	{ MODE_OUT_FROM_CENTER, 35, TOTAL_LEDS * 10},
+};
+
 Led24::Led24(int sd, int rc, int sc){
+	
+	_modeIndex = 0;
+	_currentMode = ANIMATIONS[_modeIndex];
+	
+	_time = millis();
 	_serialDataPin = sd;
 	_registerClockPin = rc;
 	_serialClockPin = sc;
@@ -34,20 +51,33 @@ void Led24::writeRegisters(){
 }
 
 void Led24::update(){
-	if (_sequence_count == 0){
-		slow_step_left_to_right();
-	}  else if (_sequence_count < 6){
-		quick_pulse();
-	}  else if (_sequence_count < 26){
-		knight_rider();
-	}  else if (_sequence_count < 31){
-		quick_pulse();
-	}  else if (_sequence_count < 50){
-		every_other_one();
-	}  else if (_sequence_count < 60){
-		out_from_center();
-	}  else{
-		_sequence_count = 0;
+	int now = millis();
+	if (now - _time > _currentMode.pulseDelay){
+		Serial.println(_currentMode.pulseDelay);
+		_time = now;
+		switch (_currentMode.name){
+			case MODE_STEP_LEFT_TO_RIGHT :
+				slow_step_left_to_right();
+			break;
+			case MODE_PULSE_ALL :
+				quick_pulse();
+			break;
+			case MODE_KNIGHT_RIDER :
+				knight_rider();
+			break;
+			case MODE_TOGGLE_EVEN_ODD :
+				every_other_one();
+			break;
+			case MODE_OUT_FROM_CENTER :
+				out_from_center();
+			break;
+		}
+		_sequence_count++;
+		if (_sequence_count == _currentMode.repeatCount){
+			_index = _sequence_count = 0;
+			if (++_modeIndex == 5) _modeIndex = 0;
+			_currentMode = ANIMATIONS[_modeIndex];
+		}
 	}
 }
 
@@ -56,11 +86,7 @@ void Led24::slow_step_left_to_right(){
 		_registers[i] = (i == _index) ? HIGH : LOW;
 	}
 	_index++;
-	if (_index == TOTAL_LEDS) {
-		_index = 0;
-		_sequence_count++;
-	}
-	writeRegisters(); delay(PULSE);
+	writeRegisters();
 }
 
 void Led24::quick_pulse(){
@@ -68,8 +94,7 @@ void Led24::quick_pulse(){
 		_registers[i] = (_state == 1) ? HIGH : LOW;
 	}
 	_state = !_state;
-	if (_state == 1) _sequence_count++;
-	writeRegisters(); delay(PULSE);
+	writeRegisters();
 }
 
 void Led24::knight_rider(){
@@ -85,9 +110,8 @@ void Led24::knight_rider(){
 		_index = 0;
 	// flip to the other direction //
 		_state = !_state;
-		_sequence_count++;
 	}
-	writeRegisters(); delay(10);
+	writeRegisters();
 }
 
 void Led24::every_other_one(){
@@ -96,8 +120,7 @@ void Led24::every_other_one(){
 	}
 // flip to the other direction //
 	_state = !_state;
-	if (_state == 1) _sequence_count++;
-	writeRegisters(); delay(PULSE);
+	writeRegisters();
 }
 
 void Led24::out_from_center(){
@@ -113,10 +136,7 @@ void Led24::out_from_center(){
 		if (r >= 0) _registers[r] = HIGH;
 	}
 	_index++;
-	if (_index == CENTER_LED + CHAIN_LENGTH) {
-		_index = 0;
-		_sequence_count++;
-	}
-	writeRegisters(); delay(35);
+	if (_index == CENTER_LED + CHAIN_LENGTH) _index = 0;
+	writeRegisters();
 }
 
