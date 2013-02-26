@@ -11,30 +11,33 @@
 */
 
 const Led24::Mode Led24::ANIMATIONS[5] = { 
-	{ MODE_STEP_LEFT_TO_RIGHT, 250, TOTAL_LEDS},
+	{ MODE_STEP_LEFT_TO_RIGHT, 150, TOTAL_LEDS},
 	{ MODE_PULSE_ALL, 250, 10},
-	{ MODE_KNIGHT_RIDER, 10, TOTAL_LEDS * 11},
-	{ MODE_TOGGLE_EVEN_ODD, 250, 10},
-	{ MODE_OUT_FROM_CENTER, 35, TOTAL_LEDS * 10},
+	{ MODE_KNIGHT_RIDER, 25, TOTAL_LEDS * 5},
+	{ MODE_TOGGLE_EVEN_ODD, 500, 10},
+	{ MODE_OUT_FROM_CENTER, 25, TOTAL_LEDS * 10}
 };
 
 Led24::Led24(int sd, int rc, int sc){
 	
 	_modeIndex = 0;
 	_currentMode = ANIMATIONS[_modeIndex];
-	
-	_time = millis();
+// set user defined shift register pins //
 	_serialDataPin = sd;
 	_registerClockPin = rc;
 	_serialClockPin = sc;
+	
 // initialize counter variables //
+	_time = millis();
 	_index = 0;
-	_sequence_count = 0;
 	_state = 1;
+	_sequence_count = 0;
+	
 // set data & clock pins on the arduino //
 	pinMode(_serialDataPin, OUTPUT);
 	pinMode(_registerClockPin, OUTPUT);
 	pinMode(_serialClockPin, OUTPUT);
+	
 // ensure nothing is in the shift registers to start //
 	for(int i = 0; i < TOTAL_LEDS; i++) _registers[i] = LOW;
 	writeRegisters();
@@ -102,7 +105,7 @@ void Led24::knight_rider(){
 		if (_state == 1){
 			_registers[i] = (i == _index) ? HIGH : LOW;
 		}  else if (_state == 0){
-			_registers[i] = (i == TOTAL_LEDS - _index) ? HIGH : LOW;
+			_registers[i] = (i == TOTAL_LEDS - _index - 1) ? HIGH : LOW;
 		}
 	}
 	_index++;
@@ -132,8 +135,15 @@ void Led24::out_from_center(){
 	// set constraints //
 		if (l < CENTER_LED) l = CENTER_LED;
 		if (r > CENTER_LED - 1) r = CENTER_LED - 1;
-		if (l <= TOTAL_LEDS) _registers[l] = HIGH;
-		if (r >= 0) _registers[r] = HIGH;
+		if (l >= TOTAL_LEDS) l = TOTAL_LEDS - 1;
+		if (r < 0) r = 0;
+		if (_index < CENTER_LED + CHAIN_LENGTH - 1){
+			_registers[l] = HIGH;
+			_registers[r] = HIGH;
+		}	else{
+			_registers[l] = LOW;
+			_registers[r] = LOW;
+		}
 	}
 	_index++;
 	if (_index == CENTER_LED + CHAIN_LENGTH) _index = 0;

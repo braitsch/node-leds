@@ -5,18 +5,11 @@
 Led24 led24Controller(9, 10, 11);
 SevenSegment sevSegController(4, 5, 6, 7);
 
-void setup(){ }
+void setup(){
+	sevSegController.countFrom(0, 10);
+}
 
-int seconds = 0;
-int t1 = millis();
 void loop(){
-	int t2 = millis();
-	if (t2 - t1 > 1000){
-		t1 = t2;
-		seconds++;
-		sevSegController.setNumber(seconds);
-	}
-	if (seconds > 9999) seconds = 1;
 	led24Controller.update();
 	sevSegController.update();
 }

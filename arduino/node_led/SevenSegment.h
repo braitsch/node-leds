@@ -8,7 +8,7 @@ class SevenSegment{
 public:
 	SevenSegment(int d1, int d2, int d3, int d4);
 	void update();
-	void setNumber(int n);
+	void countFrom(int n, int speed);
 
 private:
 	
@@ -18,11 +18,19 @@ private:
 	static const int NUM_DIGITS = 4;
 	static const int NUM_SEGMENTS = 8;
 	static byte const SEGMENTS[10][7];
+
+	static const int MODE_COUNT_UP = 1;
 	
-	int _displayNumber[4];
+	int _mode;
+	int _time;
+	int _delay;
+	int _displayNumber;
+	int _digits[NUM_DIGITS];
 	int _digitPins[NUM_DIGITS];
-	boolean _registers[NUM_SEGMENTS];
+	bool _registers[NUM_SEGMENTS];
 	
+	void increment();
+	void parseNumber(int n);
 	void writeNumber(int n);
 	void write_registers();
 };

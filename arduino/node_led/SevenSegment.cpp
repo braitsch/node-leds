@@ -25,6 +25,7 @@ byte const SevenSegment::SEGMENTS[10][7] = {
 */
 
 SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
+	_time = millis();
 	_digitPins[0] = d1;
 	_digitPins[1] = d2;
 	_digitPins[2] = d3;
@@ -35,24 +36,48 @@ SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
 	for(int i = 0; i < 4; i++) pinMode(_digitPins[i], OUTPUT);
 }
 
+void SevenSegment::countFrom(int n, int speed)
+{
+	_delay = speed;
+	_mode = SevenSegment::MODE_COUNT_UP;
+	parseNumber(n);
+}
+
 void SevenSegment::update()
 {
-	for(int i = 0; i < 4; i++) {
-		writeNumber(_displayNumber[i]);
+	if (_mode == SevenSegment::MODE_COUNT_UP) {
+		increment();
+	}
+	
+// turn each digit on in order //
+	for(int i = 0; i < NUM_DIGITS; i++) {
+		writeNumber(_digits[i]);
 		digitalWrite(_digitPins[i], HIGH);
 		delay(1);
 		digitalWrite(_digitPins[i], LOW);
 	}
 }
 
-void SevenSegment::setNumber(int n)
+void SevenSegment::increment()
 {
+	int t2 = millis();
+	if (t2 - _time > _delay){
+		_time = t2;
+		parseNumber(++_displayNumber);
+	}
+}
+
+void SevenSegment::parseNumber(int n)
+{
+	_displayNumber = n;
+// limit displayNumber to 9999 since we only have four digits //
+	if (_displayNumber > 9999) _displayNumber = 0;
 // break the incoming number into four _digitPins //
-	_displayNumber[0] = n / 1000;
-	_displayNumber[1] = (n / 100) % 10;
-	_displayNumber[2] = (n / 10) % 10;
-	_displayNumber[3] = n % 10;
-	Serial.println(String(_displayNumber[0])+':'+String(_displayNumber[1])+':'+String(_displayNumber[2])+':'+String(_displayNumber[3]));
+	_digits[0] = _displayNumber / 1000;
+	_digits[1] = (_displayNumber / 100) % 10;
+	_digits[2] = (_displayNumber / 10) % 10;
+	_digits[3] = _displayNumber % 10;
+	Serial.println(String(_digits[0])+':'+String(_digits[1])+':'+String(_digits[2])+':'+String(_digits[3]));
 }
 
 void SevenSegment::writeNumber(int n)
