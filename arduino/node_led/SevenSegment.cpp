@@ -19,6 +19,15 @@ byte const SevenSegment::SEGMENTS[10][7] = {
 	{ 1,1,1,0,0,1,1 }   // = 9
 };
 
+byte const SevenSegment::LOOPS[6][7] = { 
+	{ 1,0,0,0,0,0,0 },
+	{ 0,1,0,0,0,0,0 },
+	{ 0,0,1,0,0,0,0 },
+	{ 0,0,0,1,0,0,0 },
+	{ 0,0,0,0,1,0,0 },
+	{ 0,0,0,0,0,1,0 },
+};
+
 /*
 	Constructor takes four pins that map to each of the four digits.
 	Shift Register pins (0, 1, 2) are hard coded as constants for now...
@@ -26,6 +35,7 @@ byte const SevenSegment::SEGMENTS[10][7] = {
 
 SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
 	_time = millis();
+	_index = 0;
 	_digitPins[0] = d1;
 	_digitPins[1] = d2;
 	_digitPins[2] = d3;
@@ -34,6 +44,14 @@ SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
 	pinMode(REGISTER_CLOCK, OUTPUT);
 	pinMode(SERIAL_CLOCK, OUTPUT);
 	for(int i = 0; i < 4; i++) pinMode(_digitPins[i], OUTPUT);
+}
+
+void SevenSegment::setNumber(int n)
+{
+	_delay = 100;
+	_sequence_count = 0;
+	_mode = SevenSegment::MODE_STATIC;
+	parseNumber(n);
 }
 
 void SevenSegment::countFrom(int n, int speed)
@@ -45,16 +63,30 @@ void SevenSegment::countFrom(int n, int speed)
 
 void SevenSegment::update()
 {
-	if (_mode == SevenSegment::MODE_COUNT_UP) {
+	if (_mode == SevenSegment::MODE_STATIC) {
+		cycle();
+	}	else if (_mode == SevenSegment::MODE_COUNT_UP){
 		increment();
 	}
-	
-// turn each digit on in order //
-	for(int i = 0; i < NUM_DIGITS; i++) {
-		writeNumber(_digits[i]);
-		digitalWrite(_digitPins[i], HIGH);
-		delay(1);
-		digitalWrite(_digitPins[i], LOW);
+}
+
+void SevenSegment::cycle()
+{
+	int t2 = millis();
+	if (t2 - _time > _delay){
+		_time = t2;
+		if (++_index == 6) {
+			_index = 0;
+			if (_sequence_count++ == 5){
+				// stop cycling and show static number //
+			}
+		}
+		const byte* digit = SevenSegment::LOOPS[_index];
+	// copy segment values for this digit into the registers array //
+		for(int i = 0; i < NUM_SEGMENTS; i++) _registers[i] = digit[i] == 0 ? 1 : 0;
+		write_registers();
+	// turn each digit on in order //
+		for(int i = 0; i < NUM_DIGITS; i++) digitalWrite(_digitPins[i], HIGH);
 	}
 }
 
@@ -64,6 +96,13 @@ void SevenSegment::increment()
 	if (t2 - _time > _delay){
 		_time = t2;
 		parseNumber(++_displayNumber);
+	}
+// turn each digit on in order //
+	for(int i = 0; i < NUM_DIGITS; i++) {
+		writeNumber(_digits[i]);
+		digitalWrite(_digitPins[i], HIGH);
+		delay(1);
+		digitalWrite(_digitPins[i], LOW);
 	}
 }
 

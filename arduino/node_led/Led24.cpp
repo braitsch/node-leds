@@ -56,7 +56,6 @@ void Led24::writeRegisters(){
 void Led24::update(){
 	int now = millis();
 	if (now - _time > _currentMode.pulseDelay){
-		Serial.println(_currentMode.pulseDelay);
 		_time = now;
 		switch (_currentMode.name){
 			case MODE_STEP_LEFT_TO_RIGHT :
