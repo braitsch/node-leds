@@ -22,22 +22,23 @@ private:
 	static byte const NUMBERS[10][7];
 
 	static const int MODE_STATIC = 1;
-	static const int MODE_COUNT_UP = 2;
+	static const int MODE_COUNTING = 2;
+	static const int MODE_ANIMATING = 3;
 	
 	int _mode;
 	int _time;
-	int _index;
 	int _delay;
 	int _displayNumber;
+	int _displaySegment;
 	int _sequence_count;
 	int _digits[NUM_DIGITS];
 	int _digitPins[NUM_DIGITS];
 	bool _registers[NUM_SEGMENTS];
 
-	void cycle();
-	void increment();
+	void stepThroughSegments();
 	void parseNumber(int n);
-	void writeNumber(int n);
+	void writeNumber();
+	void writeSegment();
 	void write_registers();
 };
 

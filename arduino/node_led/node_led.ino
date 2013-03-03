@@ -13,4 +13,10 @@ void setup(){
 void loop(){
 	led24Controller.update();
 	sevSegController.update();
+	
+/*
+	set to random # on some delay
+	should loop through segments 5 times and then display #
+	sevSegController.setNumber(1234);
+*/
 }

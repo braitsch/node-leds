@@ -36,7 +36,6 @@ byte const SevenSegment::SEGMENTS[6][7] = {
 SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
 	
 // initialize some instance variables //
-	_index = 0;
 	_time = millis();
 	
 // bind the four digits to the user specified pins //
@@ -55,61 +54,49 @@ SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
 void SevenSegment::setNumber(int n)
 {
 	_delay = 100;
+	_displaySegment = 0;
 	_sequence_count = 0;
-	_mode = SevenSegment::MODE_STATIC;
+	_mode = SevenSegment::MODE_ANIMATING;
 	parseNumber(n);
 }
 
 void SevenSegment::countFrom(int n, int speed)
 {
 	_delay = speed;
-	_mode = SevenSegment::MODE_COUNT_UP;
+	_mode = SevenSegment::MODE_COUNTING;
 	parseNumber(n);
 }
 
 void SevenSegment::update()
 {
-	if (_mode == SevenSegment::MODE_STATIC) {
-		cycle();
-	}	else if (_mode == SevenSegment::MODE_COUNT_UP){
-		increment();
-	}
-}
-
-void SevenSegment::cycle()
-{
 	int t2 = millis();
 	if (t2 - _time > _delay){
 		_time = t2;
-		if (++_index == 6) {
-			_index = 0;
-			if (_sequence_count++ == 5){
-				// stop cycling and show static number //
-			}
+		switch(_mode){
+			case SevenSegment::MODE_STATIC :
+				writeNumber();
+			break;
+			case SevenSegment::MODE_COUNTING :
+				parseNumber(++_displayNumber);
+				writeNumber();
+			break;
+			case SevenSegment::MODE_ANIMATING :
+				stepThroughSegments();
+			break;
 		}
-		const byte* digit = SevenSegment::SEGMENTS[_index];
-	// copy segment values for this digit into the registers array //
-		for(int i = 0; i < NUM_SEGMENTS; i++) _registers[i] = digit[i] == 0 ? 1 : 0;
-		write_registers();
-	// turn each digit on in order //
-		for(int i = 0; i < NUM_DIGITS; i++) digitalWrite(_digitPins[i], HIGH);
 	}
 }
 
-void SevenSegment::increment()
+void SevenSegment::stepThroughSegments()
 {
-	int t2 = millis();
-	if (t2 - _time > _delay){
-		_time = t2;
-		parseNumber(++_displayNumber);
+	if (++_displaySegment == 6) {
+		_displaySegment = 0;
+		if (_sequence_count++ == 5){
+	// stop cycling and show the display number //
+			_mode = SevenSegment::MODE_STATIC;
+		}
 	}
-// turn each digit on in order //
-	for(int i = 0; i < NUM_DIGITS; i++) {
-		writeNumber(_digits[i]);
-		digitalWrite(_digitPins[i], HIGH);
-		delay(1);
-		digitalWrite(_digitPins[i], LOW);
-	}
+	writeSegment();
 }
 
 void SevenSegment::parseNumber(int n)
@@ -125,14 +112,34 @@ void SevenSegment::parseNumber(int n)
 	Serial.println(String(_digits[0])+':'+String(_digits[1])+':'+String(_digits[2])+':'+String(_digits[3]));
 }
 
-void SevenSegment::writeNumber(int n)
+void SevenSegment::writeSegment()
 {
-	const byte* digit = SevenSegment::NUMBERS[n];
+	const byte* digit = SevenSegment::SEGMENTS[_displaySegment];
 // copy segment values for this digit into the registers array //
 	for(int i = 0; i < NUM_SEGMENTS; i++) _registers[i] = digit[i] == 0 ? 1 : 0;
-// force off the decimal point for now //
-	_registers[7] = HIGH;
 	write_registers();
+// turn all digits on to show the same newly active segment //
+	for(int i = 0; i < NUM_DIGITS; i++) digitalWrite(_digitPins[i], HIGH);
+}
+
+void SevenSegment::writeNumber()
+{
+// set each digit one at a time to its corresponding number in the digits array //
+	for(int i = 0; i < NUM_DIGITS; i++) {
+// get the number for this digit //
+		int n = _digits[i];
+// get the array of segments that make up the number //
+		const byte* digit = SevenSegment::NUMBERS[n];
+// copy segment values for this number into the registers array //
+		for(int i = 0; i < NUM_SEGMENTS; i++) _registers[i] = digit[i] == 0 ? 1 : 0;
+// force off the decimal point for now //
+// this might not be necessary .. need to test
+		_registers[7] = HIGH;
+		write_registers();
+		digitalWrite(_digitPins[i], HIGH);
+		delay(1);
+		digitalWrite(_digitPins[i], LOW);
+	}
 }
 
 void SevenSegment::write_registers(){
