@@ -18,8 +18,8 @@ private:
 	static const int SERIAL_CLOCK = 2;
 	static const int NUM_DIGITS = 4;
 	static const int NUM_SEGMENTS = 8;
-	static byte const LOOPS[6][7];
-	static byte const SEGMENTS[10][7];
+	static byte const SEGMENTS[6][7];
+	static byte const NUMBERS[10][7];
 
 	static const int MODE_STATIC = 1;
 	static const int MODE_COUNT_UP = 2;

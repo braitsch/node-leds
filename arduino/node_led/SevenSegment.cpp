@@ -6,7 +6,7 @@
 
 #include "SevenSegment.h"
 
-byte const SevenSegment::SEGMENTS[10][7] = { 
+byte const SevenSegment::NUMBERS[10][7] = { 
 	{ 1,1,1,1,1,1,0 },  // = 0
 	{ 0,1,1,0,0,0,0 },  // = 1
 	{ 1,1,0,1,1,0,1 },  // = 2
@@ -19,13 +19,13 @@ byte const SevenSegment::SEGMENTS[10][7] = {
 	{ 1,1,1,0,0,1,1 }   // = 9
 };
 
-byte const SevenSegment::LOOPS[6][7] = { 
-	{ 1,0,0,0,0,0,0 },
-	{ 0,1,0,0,0,0,0 },
-	{ 0,0,1,0,0,0,0 },
-	{ 0,0,0,1,0,0,0 },
-	{ 0,0,0,0,1,0,0 },
-	{ 0,0,0,0,0,1,0 },
+byte const SevenSegment::SEGMENTS[6][7] = { 
+	{ 1,0,0,0,0,0,0 },	// = a
+	{ 0,1,0,0,0,0,0 },	// = b
+	{ 0,0,1,0,0,0,0 },	// = c
+	{ 0,0,0,1,0,0,0 },	// = d
+	{ 0,0,0,0,1,0,0 },	// = e
+	{ 0,0,0,0,0,1,0 },	// = f
 };
 
 /*
@@ -34,16 +34,22 @@ byte const SevenSegment::LOOPS[6][7] = {
 */
 
 SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
-	_time = millis();
+	
+// initialize some instance variables //
 	_index = 0;
+	_time = millis();
+	
+// bind the four digits to the user specified pins //
 	_digitPins[0] = d1;
 	_digitPins[1] = d2;
 	_digitPins[2] = d3;
 	_digitPins[3] = d4;
+	for(int i = 0; i < 4; i++) pinMode(_digitPins[i], OUTPUT);
+	
+// setup the shift register pins, eventually these should be user defined //
 	pinMode(SERIAL_DATA, OUTPUT);
 	pinMode(REGISTER_CLOCK, OUTPUT);
 	pinMode(SERIAL_CLOCK, OUTPUT);
-	for(int i = 0; i < 4; i++) pinMode(_digitPins[i], OUTPUT);
 }
 
 void SevenSegment::setNumber(int n)
@@ -81,7 +87,7 @@ void SevenSegment::cycle()
 				// stop cycling and show static number //
 			}
 		}
-		const byte* digit = SevenSegment::LOOPS[_index];
+		const byte* digit = SevenSegment::SEGMENTS[_index];
 	// copy segment values for this digit into the registers array //
 		for(int i = 0; i < NUM_SEGMENTS; i++) _registers[i] = digit[i] == 0 ? 1 : 0;
 		write_registers();
@@ -121,7 +127,7 @@ void SevenSegment::parseNumber(int n)
 
 void SevenSegment::writeNumber(int n)
 {
-	const byte* digit = SevenSegment::SEGMENTS[n];
+	const byte* digit = SevenSegment::NUMBERS[n];
 // copy segment values for this digit into the registers array //
 	for(int i = 0; i < NUM_SEGMENTS; i++) _registers[i] = digit[i] == 0 ? 1 : 0;
 // force off the decimal point for now //
