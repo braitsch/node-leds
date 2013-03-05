@@ -53,7 +53,7 @@ SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
 
 void SevenSegment::setNumber(int n)
 {
-	_delay = 100;
+	_delay = ANIMATION_SPEED;
 	_displaySegment = 0;
 	_sequence_count = 0;
 	_mode = SevenSegment::MODE_ANIMATING;
@@ -89,14 +89,16 @@ void SevenSegment::update()
 
 void SevenSegment::stepThroughSegments()
 {
-	if (++_displaySegment == 6) {
+	if (_displaySegment == 6) {
 		_displaySegment = 0;
-		if (_sequence_count++ == 5){
+		if (++_sequence_count == ANIMATION_NUM_LOOPS){
 	// stop cycling and show the display number //
+			_delay = 0;
 			_mode = SevenSegment::MODE_STATIC;
 		}
 	}
 	writeSegment();
+	_displaySegment++;
 }
 
 void SevenSegment::parseNumber(int n)

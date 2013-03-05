@@ -21,6 +21,9 @@ private:
 	static byte const SEGMENTS[6][7];
 	static byte const NUMBERS[10][7];
 
+	static const int ANIMATION_SPEED = 50; // slower # is faster //
+	static const int ANIMATION_NUM_LOOPS = 5;
+
 	static const int MODE_STATIC = 1;
 	static const int MODE_COUNTING = 2;
 	static const int MODE_ANIMATING = 3;
