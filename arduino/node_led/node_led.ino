@@ -12,11 +12,18 @@ void setup(){
 
 void loop(){
 	if (Serial.available() > 0) {
+// first byte received represents the command to exec //
 		int cmd = Serial.read();
-		if (cmd == 1){
-			onNewUserConnected();
-		}	else if (cmd == 2){
-			onAnimationSelected();
+		switch(cmd){
+			case 1 :
+				onNewUserConnected();
+			break;
+			case 2 :
+				onAnimationSelected();
+			break;
+			case 3 :
+				onAutoModeSelected();
+			break;
 		}
 	}
 	led24Controller.update();
@@ -36,4 +43,9 @@ void onNewUserConnected()
 void onAnimationSelected()
 {
 	led24Controller.setAnimation(Serial.read());
+}
+
+void onAutoModeSelected()
+{
+	led24Controller.setAutoMode(Serial.read());
 }

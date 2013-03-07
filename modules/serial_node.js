@@ -18,12 +18,19 @@ exports.setAnimation = function(n)
 	sendToArduino(new Buffer([2, n]));
 }
 
+exports.setAutoMode = function(n)
+{
+	console.log('sending to arduino ::', 3, n);
+	sendToArduino(new Buffer([3, n]));
+}
+
 /*
 	Private Methods
 */
 
 var arduino;
-var serialport = require("serialport");
+var socket = require('./socket_server');
+var serialport = require('serialport');
 var exec = require('child_process').exec;
 
 var getArduinoPort = function(callback)
@@ -74,7 +81,10 @@ var attemptConnection = function(port)
 	arduino = new serialport.SerialPort(port, { baudrate: 9600, parser: serialport.parsers.readline("\n") });
 	arduino.on("open", function () {
 		console.log('* connection to arduino successful ! *');
-		arduino.on('data', onDataReceived);
+		arduino.on('data', function(data){
+		// send incoming data from arduino out to the socket server //
+			socket.onDataFromArduino(data);
+		});
 	});
 }
 
@@ -90,9 +100,4 @@ var sendToArduino = function(buffer)
 			}
 		});
 	}
-}
-
-var onDataReceived = function(data)
-{
-	console.log('data received : ' + data);
 }

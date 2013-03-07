@@ -5,11 +5,15 @@ block content
 		.navbar-inner
 			#user-id.brand
 	#wrapper
-		#ani1.button.btn.btn-large.btn-block Step Across
-		#ani2.button.btn.btn-large.btn-block Pulse All
-		#ani3.button.btn.btn-large.btn-block Knight Rider
-		#ani4.button.btn.btn-large.btn-block Toggle Even-Odd
-		#ani5.button.btn.btn-large.btn-block Out From Center
+		// div ids map to indices of the ANIMATIONS array defined in /arduino/node_led/Led24.cpp
+		#modes
+			#ani1.button.btn.btn-large.btn-block Step Across
+			#ani2.button.btn.btn-large.btn-block Pulse All
+			#ani3.button.btn.btn-large.btn-block Knight Rider
+			#ani4.button.btn.btn-large.btn-block Toggle Even-Odd
+			#ani5.button.btn.btn-large.btn-block Out From Center
+		hr
+		#auto.button.btn.btn-large.btn-block Auto Mode
 
 block scripts
 	script(src='/js/index.js')

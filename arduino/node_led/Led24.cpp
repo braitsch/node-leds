@@ -75,6 +75,10 @@ void Led24::update(){
 				_index = _sequence_count = 0;
 				if (++_modeIndex == NUM_ANIMATIONS) _modeIndex = 0;
 				_currentMode = ANIMATIONS[_modeIndex];
+		// tell the outside world the animation mode has changed //
+				String m = "MODE";
+				m += _modeIndex+1;
+				Serial.println(m);
 			}
 		}
 	}
@@ -93,8 +97,6 @@ void Led24::setAnimation(int n){
 // set the animation mode //
 	_modeIndex = n - 1;
 	_currentMode = ANIMATIONS[_modeIndex];
-	Serial.print("Led24::setAnimation received: ");
-	Serial.println(n);
 }
 
 /*
