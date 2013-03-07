@@ -74,3 +74,11 @@ exports.writeNumber = function(n)
 		});
 	}
 }
+
+exports.setAnimation = function(n)
+{
+	// calling write if an arduino is not connected will crash the server! //
+	if (arduino){
+		console.log('sending to arduino animation ::', n);
+	}
+}

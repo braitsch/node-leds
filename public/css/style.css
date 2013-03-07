@@ -3,4 +3,4 @@ body{height:100%;background-color:#eee}
 .navbar-inner{padding:0}
 .navbar-inner .brand{width:100%;margin:0;text-align:center}
 .navbar .brand{padding:10px 0 10px 0}
-#wrapper{padding:50px;width:500px;margin:auto;margin-top:20%}
+#wrapper{padding:30px 50px 0 50px;margin:auto}
