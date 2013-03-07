@@ -27,11 +27,13 @@ getArduinoPort(function(port){
 		// find the port the arduino is connected to //
 			ports.forEach(function(port) {
 				for (var k in port){
-					console.log('prop='+k, 'val='prop[k]);
+					console.log('prop='+k, 'val='port[k]);
 				}
 			// raspberry pi //
 				if (port.hasOwnProperty('pnpId')){
-					if (port.pnpId.search('FTDI') != -1) arduinoPort = port.comName;
+			// FTDI captures the duemilanove //
+			// Arduino captures the leonardo //
+					if (port.pnpId.search('FTDI') != -1 || port.pnpId.search('Arduino') != -1) arduinoPort = port.comName;
 				}
 			});
 		});
