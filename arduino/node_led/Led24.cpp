@@ -108,6 +108,7 @@ void Led24::slow_step_left_to_right(){
 		_registers[i] = (i == _index) ? HIGH : LOW;
 	}
 	_index++;
+	if (_index == TOTAL_LEDS) _index = 0;
 	writeRegisters();
 }
 
