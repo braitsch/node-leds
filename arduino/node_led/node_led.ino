@@ -11,14 +11,31 @@ void setup(){
 }
 
 void loop(){
-	// print the id of any new connections //
 	if (Serial.available() > 0) {
-	// first byte is the multiplier //
-		int m = Serial.read() * 255;
-	// second byte is the remainder //
-		int r = Serial.read();
-		sevSegController.setNumber(m + r);
+		int cmd = Serial.read();
+		if (cmd == 1){
+			onNewUserConnected();
+		}	else if (cmd == 2){
+			onAnimationSelected();
+		}
 	}
 	led24Controller.update();
 	sevSegController.update();
+}
+
+void onNewUserConnected()
+{
+// first byte is the multiplier //
+	int m = Serial.read() * 255;
+// second byte is the remainder //
+	int r = Serial.read();
+// print the id of the newest connection //
+	sevSegController.setNumber(m + r);
+}
+
+void onAnimationSelected()
+{
+	int n = Serial.read();
+	Serial.print("onAnimationSelected received: ");
+	Serial.println(n);
 }

@@ -1,4 +1,27 @@
 
+/*
+	Public API
+*/
+
+exports.writeNumber = function(n)
+{
+// parse number into multiplier and remainder //
+	var m = Math.floor(n/255);
+	var r = n%255;
+	console.log('sending to arduino ::', 1, m, r);
+	sendToArduino(new Buffer([1, m, r]));
+}
+
+exports.setAnimation = function(n)
+{
+	console.log('sending to arduino ::', 2, n);
+	sendToArduino(new Buffer([2, n]));
+}
+
+/*
+	Private Methods
+*/
+
 var arduino;
 var serialport = require("serialport");
 var exec = require('child_process').exec;
@@ -17,6 +40,10 @@ var getArduinoPort = function(callback)
 		callback(port);
 	});
 }
+
+/*
+	Attempt to connect to Arduino
+*/
 
 getArduinoPort(function(port){
 	if (port){
@@ -51,34 +78,21 @@ var attemptConnection = function(port)
 	});
 }
 
-var onDataReceived = function(data)
-{
-	console.log('data received : ' + data);
-}
-
-exports.writeNumber = function(n)
+var sendToArduino = function(buffer)
 {
 // calling write if an arduino is not connected will crash the server! //
 	if (arduino){
-	// parse number into multiplier and remainder //
-		var m = Math.floor(n/255);
-		var r = n%255;
-		console.log('sending to arduino ::', n);
-		arduino.write(new Buffer([m, r]), function(e, results) {
+		arduino.write(buffer, function(e, results) {
 			if (e) {
 				console.log('error :: ' + e);
 			}	else{
-				console.log('message successfully sent');
+			//	console.log('message successfully sent');
 			}
-		//	if (results) console.log('results :: ' + results);
 		});
 	}
 }
 
-exports.setAnimation = function(n)
+var onDataReceived = function(data)
 {
-	// calling write if an arduino is not connected will crash the server! //
-	if (arduino){
-		console.log('sending to arduino animation ::', n);
-	}
+	console.log('data received : ' + data);
 }
