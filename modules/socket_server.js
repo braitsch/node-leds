@@ -17,11 +17,11 @@ exports.init = function(io){
 
 var onUserConnected = function(socket)
 {
-	console.log('user connected :: '+socket.user.name);
+	arduino.writeNumber(socket.user.id);
 	socket.on('button-pressed', function(data){
-		arduino.toggleLed(1);
+	//	arduino.toggleLed(1);
 	});
 	socket.on('button-released', function(data){
-		arduino.toggleLed(0);
+	//	arduino.toggleLed(0);
 	});
 }
