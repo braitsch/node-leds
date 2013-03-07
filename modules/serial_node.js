@@ -19,37 +19,37 @@ var getArduinoPort = function(callback)
 }
 
 getArduinoPort(function(port){
-	var arduinoPort;
 	if (port){
-		arduinoPort = port;
+		attemptConnection(port);
+		return;
 	}	else{
 		serialport.list(function (e, ports) {
-		// find the port the arduino is connected to //
+		// find the port on the raspberry pi the arduino is connected to //
 			ports.forEach(function(port) {
-				for (var k in port){
-					console.log('prop='+k, 'val='+port[k]);
-				}
-			// raspberry pi //
+				for (var k in port) console.log('prop='+k, 'val='+port[k]);
 				if (port.hasOwnProperty('pnpId')){
 			// FTDI captures the duemilanove //
 			// Arduino captures the leonardo //
-					if (port.pnpId.search('FTDI') != -1 || port.pnpId.search('Arduino') != -1) arduinoPort = port.comName;
+					if (port.pnpId.search('FTDI') != -1 || port.pnpId.search('Arduino') != -1) {
+						attemptConnection(port.comName);
+						return;
+					}
 				}
 			});
 		});
 	}
-// attempt connection //
-	if (arduinoPort){
-		console.log('* attempting to connect to arduino at :', arduinoPort, ' *');
-		arduino = new serialport.SerialPort(arduinoPort, { baudrate: 9600, parser: serialport.parsers.readline("\n") });
-		arduino.on("open", function () {
-			console.log('* connection to arduino successful ! *');
-			arduino.on('data', onDataReceived);
-		});
-	}	else{
-		console.log('* failed to find arduino : please check your connections *');
-	}
+	console.log('* failed to find arduino : please check your connections *');
 });
+
+var attemptConnection = function(port)
+{
+	console.log('* attempting to connect to arduino at :', port, ' *');
+	arduino = new serialport.SerialPort(port, { baudrate: 9600, parser: serialport.parsers.readline("\n") });
+	arduino.on("open", function () {
+		console.log('* connection to arduino successful ! *');
+		arduino.on('data', onDataReceived);
+	});
+}
 
 var onDataReceived = function(data)
 {
