@@ -7,9 +7,9 @@ $(document).ready(function(){
 			activeButton = e.target;
 			$('#wrapper .button').each(function(i, o){
 				if(o == e.target){
-					$(o).addClass('disabled');
+					$(o).addClass('btn-success');
 				}	else{
-					$(o).removeClass('disabled');
+					$(o).removeClass('btn-success');
 				}
 			});
 			var n = $(e.target).attr('id').substr(-1);

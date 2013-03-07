@@ -4,7 +4,7 @@ var activeUser;
 var activeAnimation;
 
 /*
-	TODO - need to store the current playing animation on the server
+	TODO - need to store the current animation & autoMode setting on the server
 */
 
 exports.init = function(io){
