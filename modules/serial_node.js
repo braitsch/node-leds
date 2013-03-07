@@ -27,7 +27,7 @@ getArduinoPort(function(port){
 		// find the port the arduino is connected to //
 			ports.forEach(function(port) {
 				for (var k in port){
-					console.log('prop='+k, 'val='port[k]);
+					console.log('prop='+k, 'val='+port[k]);
 				}
 			// raspberry pi //
 				if (port.hasOwnProperty('pnpId')){
