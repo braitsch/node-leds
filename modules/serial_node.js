@@ -26,7 +26,9 @@ getArduinoPort(function(port){
 		serialport.list(function (e, ports) {
 		// find the port the arduino is connected to //
 			ports.forEach(function(port) {
-				console.log('port = '+port);
+				for (var k in port){
+					console.log('prop='+k, 'val='prop[k]);
+				}
 			// raspberry pi //
 				if (port.hasOwnProperty('pnpId')){
 					if (port.pnpId.search('FTDI') != -1) arduinoPort = port.comName;
