@@ -8,10 +8,13 @@ class Led24 {
 public:
 	Led24(int sd, int rc, int sc);
 	void update();
+	void setAutoMode(bool n);
+	void setAnimation(int n);
 
 private:
 	static const int TOTAL_LEDS = 24;
 	static const int CENTER_LED = 12;
+	static const int NUM_ANIMATIONS = 5;
 	static const int CHAIN_LENGTH = 3; // num to keep on when moving out from center //
 	
 // animation modes //
@@ -29,7 +32,7 @@ private:
 	};
 
 	Mode _currentMode;
-	static const Mode ANIMATIONS[5];
+	static const Mode ANIMATIONS[NUM_ANIMATIONS];
 
 	int _serialDataPin;
 	int _registerClockPin;
@@ -40,6 +43,7 @@ private:
 	int _modeIndex;
 	int _sequence_count;
 	boolean _state;
+	boolean _autoMode;
 	boolean _registers[TOTAL_LEDS];
 
 	void writeRegisters();

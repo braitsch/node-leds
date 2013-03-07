@@ -10,7 +10,7 @@
 	Animtion Modes { name, pulseDelay, repeatCount }
 */
 
-const Led24::Mode Led24::ANIMATIONS[5] = { 
+const Led24::Mode Led24::ANIMATIONS[NUM_ANIMATIONS] = { 
 	{ MODE_STEP_LEFT_TO_RIGHT, 150, TOTAL_LEDS},
 	{ MODE_PULSE_ALL, 250, 10},
 	{ MODE_KNIGHT_RIDER, 25, TOTAL_LEDS * 5},
@@ -21,6 +21,7 @@ const Led24::Mode Led24::ANIMATIONS[5] = {
 Led24::Led24(int sd, int rc, int sc){
 	
 	_modeIndex = 0;
+	_autoMode = true;
 	_currentMode = ANIMATIONS[_modeIndex];
 // set user defined shift register pins //
 	_serialDataPin = sd;
@@ -43,15 +44,9 @@ Led24::Led24(int sd, int rc, int sc){
 	writeRegisters();
 }
 
-void Led24::writeRegisters(){
-	digitalWrite(_registerClockPin, LOW);
-	for(int i = TOTAL_LEDS - 1; i >=  0; i--){
-		digitalWrite(_serialClockPin, LOW);
-		digitalWrite(_serialDataPin, _registers[i]);
-		digitalWrite(_serialClockPin, HIGH);
-	}
-	digitalWrite(_registerClockPin, HIGH);
-}
+/*
+	Public API
+*/
 
 void Led24::update(){
 	int now = millis();
@@ -74,14 +69,37 @@ void Led24::update(){
 				out_from_center();
 			break;
 		}
-		_sequence_count++;
-		if (_sequence_count == _currentMode.repeatCount){
-			_index = _sequence_count = 0;
-			if (++_modeIndex == 5) _modeIndex = 0;
-			_currentMode = ANIMATIONS[_modeIndex];
+		if (_autoMode == true){
+			_sequence_count++;
+			if (_sequence_count == _currentMode.repeatCount){
+				_index = _sequence_count = 0;
+				if (++_modeIndex == NUM_ANIMATIONS) _modeIndex = 0;
+				_currentMode = ANIMATIONS[_modeIndex];
+			}
 		}
 	}
 }
+
+void Led24::setAutoMode(bool n){
+	_autoMode = n;
+}
+
+void Led24::setAnimation(int n){
+// reset timing variables //
+	_time = millis();
+	_index = 0;
+	_state = 1;
+	_sequence_count = 0;
+// set the animation mode //
+	_modeIndex = n - 1;
+	_currentMode = ANIMATIONS[_modeIndex];
+	Serial.print("Led24::setAnimation received: ");
+	Serial.println(n);
+}
+
+/*
+	Private Methods
+*/
 
 void Led24::slow_step_left_to_right(){
 	for(int i = TOTAL_LEDS - 1; i >=  0; i--){
@@ -147,5 +165,15 @@ void Led24::out_from_center(){
 	_index++;
 	if (_index == CENTER_LED + CHAIN_LENGTH) _index = 0;
 	writeRegisters();
+}
+
+void Led24::writeRegisters(){
+	digitalWrite(_registerClockPin, LOW);
+	for(int i = TOTAL_LEDS - 1; i >=  0; i--){
+		digitalWrite(_serialClockPin, LOW);
+		digitalWrite(_serialDataPin, _registers[i]);
+		digitalWrite(_serialClockPin, HIGH);
+	}
+	digitalWrite(_registerClockPin, HIGH);
 }
 

@@ -35,7 +35,5 @@ void onNewUserConnected()
 
 void onAnimationSelected()
 {
-	int n = Serial.read();
-	Serial.print("onAnimationSelected received: ");
-	Serial.println(n);
+	led24Controller.setAnimation(Serial.read());
 }
