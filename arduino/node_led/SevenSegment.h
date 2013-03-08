@@ -6,7 +6,7 @@
 class SevenSegment{
 
 public:
-	SevenSegment(int d1, int d2, int d3, int d4);
+	SevenSegment(const int pins[]);
 	void update();
 	void setNumber(int n);
 	void countFrom(int n, int speed);

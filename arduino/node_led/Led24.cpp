@@ -18,15 +18,15 @@ const Led24::Mode Led24::ANIMATIONS[NUM_ANIMATIONS] = {
 	{ MODE_OUT_FROM_CENTER, 25, TOTAL_LEDS * 10}
 };
 
-Led24::Led24(int sd, int rc, int sc){
+Led24::Led24(const int pins[]){
 	
 	_modeIndex = 0;
 	_autoMode = true;
 	_currentMode = ANIMATIONS[_modeIndex];
 // set user defined shift register pins //
-	_serialDataPin = sd;
-	_registerClockPin = rc;
-	_serialClockPin = sc;
+	_serialDataPin = pins[0];
+	_registerClockPin = pins[1];
+	_serialClockPin = pins[2];
 	
 // initialize counter variables //
 	_time = millis();

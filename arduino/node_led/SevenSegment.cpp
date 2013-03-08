@@ -33,16 +33,16 @@ byte const SevenSegment::SEGMENTS[6][7] = {
 	Shift Register pins (0, 1, 2) are hard coded as constants for now...
 */
 
-SevenSegment::SevenSegment(int d1, int d2, int d3, int d4){
+SevenSegment::SevenSegment(const int pins[]){
 	
 // initialize some instance variables //
 	_time = millis();
 	
 // bind the four digits to the user specified pins //
-	_digitPins[0] = d1;
-	_digitPins[1] = d2;
-	_digitPins[2] = d3;
-	_digitPins[3] = d4;
+	_digitPins[0] = pins[3];
+	_digitPins[1] = pins[4];
+	_digitPins[2] = pins[5];
+	_digitPins[3] = pins[6];
 	for(int i = 0; i < 4; i++) pinMode(_digitPins[i], OUTPUT);
 	
 // setup the shift register pins, eventually these should be user defined //

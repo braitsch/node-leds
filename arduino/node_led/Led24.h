@@ -6,7 +6,7 @@
 class Led24 {
 
 public:
-	Led24(int sd, int rc, int sc);
+	Led24(const int pins[]);
 	void update();
 	void setAutoMode(bool n);
 	void setAnimation(int n);
