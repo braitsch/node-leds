@@ -60,7 +60,6 @@ getArduinoPort(function(port){
 		serialport.list(function (e, ports) {
 		// find the port on the raspberry pi the arduino is connected to //
 			ports.forEach(function(port) {
-				for (var k in port) console.log('prop='+k, 'val='+port[k]);
 				if (port.hasOwnProperty('pnpId')){
 			// FTDI captures the duemilanove //
 			// Arduino captures the leonardo //
