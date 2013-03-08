@@ -40,10 +40,9 @@ var exec = require('child_process').exec;
 	Attempt to connect to Arduino
 */
 
-var getArduinoPort = function()
+var detectArduinoOnOSX = function()
 {
 	var port;
-// attempt to detect an arduino connected to mac osx //
 	console.log('* attempting to detect arduino on mac osx *');
 	exec('ls /dev/tty.*', function(error, stdout, stderr){
 		if (stdout){
@@ -52,29 +51,34 @@ var getArduinoPort = function()
 				if (ports[i].search('usbmodem') != -1 || ports[i].search('usbserial') != -1) port = ports[i];
 			}
 		}
+		if (port){
+			attemptConnection(port);
+		}	else{
+			detectArduinoOnRaspberryPI();
+		}
 	});
-	if (port){
-		attemptConnection(port)
-	}	else{
-// attempt to detect an arduino connected to a raspberry pi //
-		console.log('* attempting to detect arduino on raspberry pi *');
-		serialport.list(function (e, ports) {
-			ports.forEach(function(obj) {
-				if (obj.hasOwnProperty('pnpId')){
-			// FTDI captures the duemilanove //
-			// Arduino captures the leonardo //
-					if (obj.pnpId.search('FTDI') != -1 || obj.pnpId.search('Arduino') != -1) {
-						port = obj.comName;
-					}
+}
+
+var detectArduinoOnRaspberryPI = function()
+{
+	var port;
+	console.log('* attempting to detect arduino on raspberry pi *');
+	serialport.list(function (e, ports) {
+		ports.forEach(function(obj) {
+			if (obj.hasOwnProperty('pnpId')){
+		// FTDI captures the duemilanove //
+		// Arduino captures the leonardo //
+				if (obj.pnpId.search('FTDI') != -1 || obj.pnpId.search('Arduino') != -1) {
+					port = obj.comName;
 				}
-			});
+			}
 		});
-	}
-	if (port){
-		attemptConnection(port)
-	}	else{
-		console.log('* failed to find arduino : please check your connections *');
-	}
+		if (port){
+			attemptConnection(port);
+		}	else{
+			console.log('* failed to find arduino : please check your connections *');
+		}
+	});
 }
 
 var attemptConnection = function(port)
@@ -104,4 +108,4 @@ var sendDataToArduino = function(buffer)
 	}
 }
 
-getArduinoPort();
+detectArduinoOnOSX();
