@@ -8,7 +8,7 @@ Materials used in this project:
 
  * [Raspberry PI Model B](http://www.raspberrypi.org/)
  * [Arduino Leonardo](https://www.sparkfun.com/products/11286)
- * [2x Clear Breadboards](https://www.sparkfun.com/products/9567)
+ * [2x 400 tie pt Breadboards](https://www.sparkfun.com/products/9567)
  * [1x Full Length Breadboard](https://www.sparkfun.com/products/112)
  * [4x74HC595 Shift Registers](https://www.sparkfun.com/products/733)
  * [7-Segment Display - 4-Digit](https://www.sparkfun.com/products/9481)
