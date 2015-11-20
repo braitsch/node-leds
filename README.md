@@ -26,6 +26,6 @@ Installation:
 Any questions, comments, suggestions open an issue or [post a comment on my blog.](http://kitchen.braitsch.io/controlling-24-leds-with-node-js-and-a-raspberry-pi/)
 
 
-![Node-LEDS-schematic](./docs/node-leds-schematic.pdf?raw=true "Node-LEDS-schematic") 
+![Node-LEDS-schematic](./docs/node-leds-schematic.png?raw=true "Node-LEDS-schematic") 
 
 
